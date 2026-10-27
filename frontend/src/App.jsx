@@ -1,22 +1,29 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import MemberRegister from './components/MemberRegister';
+import MemberLogin from './components/MemberLogin';
+import VisitorForm from './components/VisitorForm';
 
-function App() {
-  const [health, setHealth] = useState(null);
+const tabs = {
+  register: { label: 'Register', Component: MemberRegister },
+  login: { label: 'Log in', Component: MemberLogin },
+  visitor: { label: 'Visitor', Component: VisitorForm },
+};
 
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then(setHealth)
-      .catch((err) => setHealth({ status: 'error', message: err.message }));
-  }, []);
+export default function App() {
+  const [active, setActive] = useState('register');
+  const { Component } = tabs[active];
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
+    <main style={{ maxWidth: 420, margin: '2rem auto', fontFamily: 'sans-serif' }}>
       <h1>Shiloh City Church</h1>
-      <p>Backend status: {health ? health.status : 'checking...'}</p>
-      <p>Database: {health ? health.database : '...'}</p>
-    </div>
+      <nav style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem' }}>
+        {Object.entries(tabs).map(([key, { label }]) => (
+          <button key={key} onClick={() => setActive(key)} disabled={key === active}>
+            {label}
+          </button>
+        ))}
+      </nav>
+      <Component />
+    </main>
   );
 }
-
-export default App;
